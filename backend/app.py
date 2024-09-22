@@ -1,20 +1,24 @@
 from flask import Flask, request, session, jsonify
 from flask_socketio import join_room, leave_room, send, SocketIO
-import random
-from string import ascii_uppercase
 from flask_cors import CORS
+from redis import Redis
+from string import ascii_uppercase
+import json
+import random
+import os
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "hjhjsdahhds"
+app.config["SECRET_KEY"] = os.urandom(24)
 CORS(app, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins="*")
 
-rooms = {}
+# Redis configuration
+redis = Redis(host='localhost', port=6379, decode_responses=True)
+socketio = SocketIO(app, cors_allowed_origins="*", message_queue='redis://localhost:6379')
 
 def generate_unique_code(length):
     while True:
         code = "".join(random.choice(ascii_uppercase) for _ in range(length))
-        if code not in rooms:
+        if not redis.exists(f"room:{code}"):
             break
     return code
 
@@ -25,7 +29,8 @@ def create_room():
         return jsonify({"error": "Name is required"}), 400
 
     room_code = generate_unique_code(4)
-    rooms[room_code] = {"members": {}, "messages": []}
+    redis.hset(f"room:{room_code}", "members", json.dumps({}))
+    redis.hset(f"room:{room_code}", "messages", json.dumps([]))
     session["room"] = room_code
     session["name"] = name
     return jsonify({"room": room_code, "name": name})
@@ -37,7 +42,7 @@ def join_room_api():
 
     if not name:
         return jsonify({"error": "Name is required"}), 400
-    if not code or code not in rooms:
+    if not redis.exists(f"room:{code}"):
         return jsonify({"error": "Room does not exist"}), 400
 
     session["room"] = code
@@ -47,16 +52,21 @@ def join_room_api():
 @socketio.on("message")
 def handle_message(data):
     room = session.get("room")
-    if room not in rooms:
+    if not redis.exists(f"room:{room}"):
         return
 
     content = {
         "name": session.get("name"),
         "message": data["data"]
     }
+
+    # Broadcast the message to all users in the room
     send(content, to=room)
-    rooms[room]["messages"].append(content)
-    print(f"{session.get('name')} said: {data['data']}")
+
+    # Save the message in Redis
+    messages = json.loads(redis.hget(f"room:{room}", "messages"))
+    messages.append(content)
+    redis.hset(f"room:{room}", "messages", json.dumps(messages))
 
 @socketio.on("connect")
 def handle_connect():
@@ -64,26 +74,24 @@ def handle_connect():
     name = session.get("name")
     if not room or not name:
         return
-    if room not in rooms:
+    if not redis.exists(f"room:{room}"):
         return
-    
+
     join_room(room)
-    rooms[room]["members"][name] = True
 
-    # Notify room about new user
+    # Update member list in Redis
+    members = json.loads(redis.hget(f"room:{room}", "members"))
+    members[name] = True
+    redis.hset(f"room:{room}", "members", json.dumps(members))
+
+    # Notify the room about the new user, send updated member list to new user and broadcast that list to room
     send({"name": name, "message": "has entered the room"}, to=room)
-    
-    # Send list of connected users to the newly connected user
-    send({"members": list(rooms[room]["members"].keys())}, to=request.sid)
+    send({"members": list(members.keys())}, to=request.sid)
+    socketio.emit('members', {"members": list(members.keys())}, to=room)
 
-    # Emit the updated list of members to all users in the room
-    socketio.emit('members', {"members": list(rooms[room]["members"].keys())}, to=room)
-
-    # Emit previous messages to the newly connected user
-    socketio.emit('previous-messages', {"messages": rooms[room]["messages"]}, to=request.sid)
-
-    print(f"{name} joined room {room}")
-
+    # Send previous messages to the newly connected user
+    previous_messages = json.loads(redis.hget(f"room:{room}", "messages"))
+    socketio.emit('previous-messages', {"messages": previous_messages}, to=request.sid)
 
 @socketio.on("disconnect")
 def handle_disconnect():
@@ -91,19 +99,18 @@ def handle_disconnect():
     name = session.get("name")
     if not room or not name:
         return
-    if room not in rooms:
+    if not redis.exists(f"room:{room}"):
         return
-    
-    # Remove the user from the room's member list
-    if name in rooms[room]["members"]:
-        del rooms[room]["members"][name]
 
-        # Notify room about the user leaving
-        socketio.emit('members', {"members": list(rooms[room]["members"].keys())}, to=room)
+    # Remove the user from the member list in Redis
+    members = json.loads(redis.hget(f"room:{room}", "members"))
+    if name in members:
+        del members[name]
+        redis.hset(f"room:{room}", "members", json.dumps(members))
+
+        # Notify the room about the user leaving
+        socketio.emit('members', {"members": list(members.keys())}, to=room)
         send({"name": name, "message": "has left the room"}, to=room)
-
-    print(f"{name} left room {room}")
-
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
