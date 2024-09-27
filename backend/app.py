@@ -19,14 +19,14 @@ CORS(app, supports_credentials=True)
 
 
 # MongoDB configuration
-mongo_client = MongoClient('mongodb://localhost:27017/')
+mongo_client = MongoClient('mongodb://mongo:27017/')
 db = mongo_client['chat_db']
 
-# Redis configuration
-redis = Redis(host='localhost', port=6379, decode_responses=True)
+# Redis configuration   
+redis = Redis(host='redis', port=6379, decode_responses=True)
 
 #SocketIO config
-socketio = SocketIO(app, cors_allowed_origins="*", message_queue='redis://localhost:6379')
+socketio = SocketIO(app, cors_allowed_origins="*", message_queue='redis://redis:6379')
 
 #room-code generator
 def generate_unique_code(length):
