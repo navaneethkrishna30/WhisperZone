@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import axios from 'axios';
 
 const ChatRoom = () => {
   const { roomId } = useParams();
@@ -23,7 +24,7 @@ const ChatRoom = () => {
     });
 
     newSocket.on('members', (data) => {
-        setMembers(data.members); // This should update the members state correctly
+        setMembers(data.members);
     });
 
     newSocket.on('previous-messages', (data) => {
@@ -45,34 +46,63 @@ const ChatRoom = () => {
     navigate('/');
   };
 
-  return (
+  const saveChat = async () => {
+    try {
+        const res = await axios.post('http://localhost:5000/api/save-chat', {
+            room: roomId,
+            messages: messages,
+        });
+        alert(res.data.message);
+    } catch (err) {
+        console.error(err.response.data);
+        alert('Error saving chat: ' + (err.response.data.error || 'Unknown error'));
+    }
+};
+
+return (
     <div>
-      <h2>Chat Room: {roomId}</h2>
-      <div id="members">
-        <h3>Members</h3>
-        <ul>
-          {members.map((member, index) => (
-            <li key={index}>{member}</li>
-          ))}
-        </ul>
+      <div className="navbar">
+        <a href="/" className="brand">LiveChat</a>
+        <div className="room-code">Room Code: {roomId}</div>
       </div>
-      <div id="messages">
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.name}</strong>: {msg.message}
+      
+      <div id="chat-container">
+        <div id="sidebar">
+          <h3>Members</h3>
+          <div id="members">
+            <ul>
+              {members.map((member, index) => (
+                <li key={index}>{member}</li>
+              ))}
+            </ul>
           </div>
-        ))}
+          <button onClick={saveChat}>Save Chat</button>
+          <button onClick={handleLeaveRoom}>Leave Room</button>
+        </div>
+  
+        <div id="messages-container">
+          <div id="messages">
+            {messages.map((msg, index) => (
+              <div key={index}>
+                <strong>{msg.name}</strong>: {msg.message}
+              </div>
+            ))}
+          </div>
+          <div id="input-container">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            />
+            <button onClick={sendMessage}>Send</button>
+          </div>
+        </div>
       </div>
-      <input
-        type="text"
-        placeholder="Message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
-      <button onClick={handleLeaveRoom}>Leave Room</button>
     </div>
   );
+   
 };
 
 export default ChatRoom;

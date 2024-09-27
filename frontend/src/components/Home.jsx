@@ -35,7 +35,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div id="home-container">
       <h3>Enter The Chat Room</h3>
       {error && <p>{error}</p>}
       <input type="text" placeholder="Pick a name!" value={name} onChange={(e) => setName(e.target.value)} />
@@ -44,6 +44,7 @@ const Home = () => {
       <button onClick={createRoom}>Create a Room</button>
     </div>
   );
+  
 };
 
 export default Home;
