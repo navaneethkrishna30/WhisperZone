@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - REDIS_HOST=redis
+      - MONGO_URI=mongodb://mongo:27017/chat_db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+      - mongo
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+  
+  mongo:
+    image: dannyben/alpine-mongo
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=chat_db
+    ports:
+      - "27017:27017" 
