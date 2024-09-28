@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Backend Service (Flask + Redis + MongoDB)
   backend:
     build:
       context: ./backend
@@ -18,25 +17,12 @@ services:
       - redis
       - mongo
 
-  # Frontend Service (React or Vite)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend
-
-  # Redis Service (for real-time data)
   redis:
     image: redis:alpine
     container_name: redis
     ports:
       - "6379:6379"
   
-  # MongoDB Service (for database storage)
   mongo:
     image: mongo:latest
     container_name: mongo
