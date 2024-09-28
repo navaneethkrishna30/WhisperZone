@@ -3,19 +3,16 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: backend_test
     environment:
       - FLASK_APP=app.py
-      - FLASK_RUN_HOST=0.0.0.0
       - REDIS_HOST=redis
       - MONGO_URI=mongodb://mongo:27017/chat_db
-    ports:
-      - "5000:5000"
     depends_on:
       - redis
       - mongo
+    command: ["pytest", "test_app.py"]  # Run tests when the container starts
 
   redis:
     image: redis:alpine
@@ -29,4 +26,4 @@ services:
     environment:
       - MONGO_INITDB_DATABASE=chat_db
     ports:
-      - "27017:27017" 
+      - "27017:27017"
