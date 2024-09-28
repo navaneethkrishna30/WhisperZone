@@ -1,15 +1,15 @@
+from string import ascii_uppercase
+from datetime import datetime
+import random
+import json
+import os
+
 from flask_socketio import join_room, send, SocketIO
 from flask import Flask, request, session, jsonify
 from flask_cors import CORS
 
 from pymongo import MongoClient
 from redis import Redis
-
-from string import ascii_uppercase
-from datetime import datetime
-import random
-import json
-import os
 
 
 # Flask Config
@@ -22,7 +22,7 @@ CORS(app, supports_credentials=True)
 mongo_client = MongoClient('mongodb://mongo:27017/')
 db = mongo_client['chat_db']
 
-# Redis configuration   
+# Redis configuration
 redis = Redis(host='redis', port=6379, decode_responses=True)
 
 #SocketIO config
