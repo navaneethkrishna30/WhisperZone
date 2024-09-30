@@ -1,5 +1,10 @@
 version: '3.8'
 
+# Network isolation
+networks:
+  live-chat-network:
+    driver: bridge
+
 services:
   backend:
     build:
@@ -9,9 +14,12 @@ services:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
       - REDIS_HOST=redis
-      - MONGO_URI=mongodb://mongo:27017/chat_db
+      - REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+      - MONGO_URI=mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@mongo:27017/chat_db
     ports:
-      - "5000:5000"
+      - "5000:5000"  # Expose the backend server port
+    networks:
+      - live-chat-network
     depends_on:
       - redis
       - mongo
@@ -19,13 +27,17 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
-    ports:
-      - "6379:6379"
-  
+    environment:
+      - REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+    networks:
+      - live-chat-network
+
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
     environment:
       - MONGO_INITDB_DATABASE=chat_db
-    ports:
-      - "27017:27017" 
+      - MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+      - MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+    networks:
+      - live-chat-network
