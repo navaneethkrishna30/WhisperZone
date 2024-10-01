@@ -1,6 +1,3 @@
-Here's a beautified and interactive documentation for **WhisperZone**, complete with tables, emojis, and an engaging layout:
-
----
 
 # 🗨️ WhisperZone
 
@@ -175,6 +172,3 @@ For local backend development without Docker, follow these steps:
 
 If you encounter any bugs or have suggestions for improvements, please open an issue on GitHub. We appreciate your feedback! 💬
 
----
-
-This documentation provides a clear, engaging overview of the WhisperZone application, making it easy for users and contributors to understand how to get started, use, and contribute to the project.
