@@ -87,7 +87,7 @@ To run the frontend locally (without Docker), follow these steps:
    npm run dev
    ```
 
-   The frontend will now be available at `http://localhost:3000`.
+   The frontend will now be available at `http://localhost:5173`.
 
 ## Running Tests
 
