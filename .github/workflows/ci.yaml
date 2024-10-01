@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - feature/CI
 
 jobs:
   build:
@@ -31,5 +31,9 @@ jobs:
           pylint . || true  # Run pylint and ignore errors
 
       - name: Build and Test with Docker Compose
+        env:
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          MONGO_USER: ${{ secrets.MONGO_USER }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
         run: |
           docker compose -f compose.test.yaml up --build --abort-on-container-exit
