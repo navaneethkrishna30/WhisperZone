@@ -54,7 +54,7 @@ This project uses Docker Compose to manage services (backend, Redis, MongoDB).
 1. **Build and start the services:**
 
    ```bash
-   docker-compose up --build
+   docker compose -f compose.local.yaml up --build
    ```
 
    This will start the backend, Redis, MongoDB, in their respective containers. The backend will be exposed on port `5000`.
@@ -131,39 +131,6 @@ We welcome contributions from the community. To get started:
 4. **Run tests locally.**
 5. **Push the changes to your fork.**
 6. **Submit a pull request.**
-
-## Local Backend Development
-
-For local backend development without Docker, follow these steps:
-
-1. Create a virtual environment and activate it:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # For Windows: venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Set environment variables for Redis and MongoDB:
-
-   ```bash
-   export REDIS_PASSWORD=your_redis_password
-   export MONGO_INITDB_ROOT_USERNAME=your_mongo_username
-   export MONGO_INITDB_ROOT_PASSWORD=your_mongo_password
-   ```
-
-4. Start the Flask app:
-
-   ```bash
-   flask run
-   ```
-
-The backend will now run locally at `http://localhost:5000`.
 
 
 ## Reporting Issues
