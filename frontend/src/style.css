@@ -1,0 +1,86 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --uxxsmall: 0.4rem;
+    --uxsmall: 0.6rem;
+    --usmaller: 0.8rem;
+    --usmall: 1.2rem;
+    --umedium: 1.6rem;
+    --ularge: 2.4rem;
+    --ularger: 3.2rem;
+    --uxlarge: 4.8rem;
+    --uxxlarge: 6.4rem;
+
+    --ucolor-white-primary: #f4f4f4;
+    --ucolor-white-secondary: #ddd;
+    --ucolor-black-primary: #242424;
+    --ucolor-black-secondary: #464646;
+    --color-green-primary: #4caf50;
+    --color-green-secondary: #45a049;
+}
+
+*,
+*::before,
+*::after {
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+html,
+body {
+    font-size: 62.5%;
+    width: 100svw;
+    height: 100svh;
+    background-color: light-dark(var(--ucolor-white-primary), var(--ucolor-black-primary));
+}
+
+#root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.has-custom-scrollbar {
+    scroll-behavior: smooth;
+}
+
+@media (pointer : fine) {
+    .has-custom-scrollbar::-webkit-scrollbar {
+        width: 1.2rem;
+    }
+
+    .has-custom-scrollbar::-webkit-scrollbar-track {
+        background-color: light-dark(var(--ucolor-white-secondary), var(--ucolor-black-secondary));
+    }
+
+    .has-custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #8a8a8a8a;
+        border-radius: 0.6rem;
+    }
+
+    .has-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #8a8a8a;
+        border-radius: 0.6rem;
+    }
+
+    .has-custom-scrollbar::-webkit-scrollbar-corner {
+        display: none;
+    }
+}
+
+@media (width < 192px) {
+    #root {
+        display: none;
+    }
+}

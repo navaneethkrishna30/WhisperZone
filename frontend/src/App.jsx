@@ -1,17 +1,22 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './components/Home';
-import ChatRoom from './components/ChatRoom';
-import './static/index.css';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
+import Home from "./pages/home/Home";
+import ChatRoom from "./pages/chatroom/ChatRoom";
+import "./style.css";
+
 
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/room/:roomId" element={<ChatRoom />} />
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route exact path="/" element={<Home />} />
+          <Route path="/room/:roomId" element={<ChatRoom />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 

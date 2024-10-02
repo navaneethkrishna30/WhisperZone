@@ -1,0 +1,19 @@
+.btn-green-button{
+    width: 60%;
+    padding: var(--usmaller);
+    background-color: var(--color-green-primary);
+    border: none;
+    border-radius: var(--usmaller);
+    align-self: center;
+    box-shadow: 4px 4px var(--usmaller) transparent;
+    transition: transform 128ms ease, box-shadow 128ms ease, background-color 128ms ease;
+}
+.btn-green-button:hover{
+    transform: scale(1.02);
+    box-shadow: 4px 4px var(--usmaller) #222;
+}
+.btn-green-button:active{
+    transform: scale(0.98);
+    background-color: var(--color-green-secondary);
+    box-shadow: 4px 4px var(--usmaller) transparent;
+}
