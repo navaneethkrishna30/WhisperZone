@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer for notifications
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS for toast notifications
 
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
-)
+    <ToastContainer /> {/* Add ToastContainer here to enable toast notifications */}
+  </React.StrictMode>
+);

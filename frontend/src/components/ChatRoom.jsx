@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import { toast } from 'react-toastify'; // Add this import for toast notifications
 
 const ChatRoom = () => {
   const { roomId } = useParams();
@@ -52,14 +53,14 @@ const ChatRoom = () => {
             room: roomId,
             messages: messages,
         });
-        alert(res.data.message);
+        toast.success(res.data.message); // Use toast for success notification
     } catch (err) {
         console.error(err.response.data);
-        alert('Error saving chat: ' + (err.response.data.error || 'Unknown error'));
+        toast.error('Error saving chat: ' + (err.response.data.error || 'Unknown error')); // Use toast for error notification
     }
-};
+  };
 
-return (
+  return (
     <div>
       <div className="navbar">
         <a href="/" className="brand">LiveChat</a>
