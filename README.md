@@ -232,6 +232,26 @@ The backend will now run locally at `http://localhost:5000`.
 Thanks to the following people who have contributed to this project:
 
 <!-- readme: contributors -start -->
+<table>
+	<tbody>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/navaneethkrishna30">
+                    <img src="https://avatars.githubusercontent.com/u/107757582?v=4" width="100;" alt="navaneethkrishna30"/>
+                    <br />
+                    <sub><b>Navaneeth Krishna</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/yashksaini-coder">
+                    <img src="https://avatars.githubusercontent.com/u/115717039?v=4" width="100;" alt="yashksaini-coder"/>
+                    <br />
+                    <sub><b>Yash Kumar Saini</b></sub>
+                </a>
+            </td>
+		</tr>
+	<tbody>
+</table>
 <!-- readme: contributors -end -->
 
 ## Reporting Issues
