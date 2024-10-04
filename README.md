@@ -85,7 +85,7 @@ This project uses Docker Compose to manage services (backend, Redis, MongoDB).
 1. **Build and start the services:**
 
    ```bash
-   docker compose up --build
+   docker-compose up --build
    ```
 
    This will start the backend, Redis, and MongoDB in their respective containers. The backend will be exposed on port `5000`.
