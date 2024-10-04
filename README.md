@@ -18,15 +18,17 @@
             <td><b>🐛 Issues</b></td>
             <td><b>🔔 Open PRs</b></td>
             <td><b>🔕 Close PRs</b></td>
+            <td><b>🛠️ Languages</b></td>
         </tr>
      </thead>
     <tbody>
          <tr>
             <td><img alt="Stars" src="https://img.shields.io/github/stars/navaneethkrishna30/WhisperZone?style=flat&logo=github"/></td>
-             <td><img alt="Forks" src="https://img.shields.io/github/forks/navaneethkrishna30/WhisperZone?style=flat&logo=github"/></td>
+            <td><img alt="Forks" src="https://img.shields.io/github/forks/navaneethkrishna30/WhisperZone?style=flat&logo=github"/></td>
             <td><img alt="Issues" src="https://img.shields.io/github/issues/navaneethkrishna30/WhisperZone?style=flat&logo=github"/></td>
             <td><img alt="Open Pull Requests" src="https://img.shields.io/github/issues-pr/navaneethkrishna30/WhisperZone?style=flat&logo=github"/></td>
            <td><img alt="Close Pull Requests" src="https://img.shields.io/github/issues-pr-closed/navaneethkrishna30/WhisperZone?style=flat&color=critical&logo=github"/></td>
+           <td><img alt="GitHub language count" src="https://img.shields.io/github/languages/count/navaneethkrishna30/WhisperZone?style=flat&color=critical&logo=github"></td>
         </tr>
     </tbody>
 </table>
@@ -224,6 +226,13 @@ For local backend development without Docker, follow these steps:
    ```
 
 The backend will now run locally at `http://localhost:5000`.
+
+## Contributors
+
+Thanks to the following people who have contributed to this project:
+
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
 
 ## Reporting Issues
 
