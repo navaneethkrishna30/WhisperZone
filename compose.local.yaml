@@ -4,39 +4,46 @@ networks:
   live-chat-network:
     driver: bridge
 
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
 services:
   backend:
     build:
       dockerfile: Dockerfile
-    container_name: backend_test
+    container_name: backend
     environment:
       - FLASK_APP=app.py
-      - REDIS_HOST=redis
-      - REDIS_PASSWORD=test_redispassword
-      - MONGO_URI=mongodb://admin:admin1234@mongo:27017/
-    depends_on:
-      - redis
-      - mongo
     networks:
       - live-chat-network
     ports:
-      - "5000:5000"  # Expose the backend server port
+      - 5000:5000
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"
+    networks:
+      - live-chat-network
 
   redis:
     image: redis:alpine
     container_name: redis
-    command: redis-server --requirepass test_redispassword
-    environment:
-      - REDIS_PASSWORD=test_redispassword
     networks:
       - live-chat-network
-  
+    volumes:
+      - redis-data:/data
+
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
-    environment:
-      - MONGO_INITDB_DATABASE=chat_db
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin1234
     networks:
       - live-chat-network
+    volumes:
+      - mongo-data:/data/db

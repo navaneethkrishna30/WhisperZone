@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - feature/CI
+      - main
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint Code
         run: |
-          pylint . || true  # Run pylint and ignore errors  
+          pylint . || true
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -37,19 +37,18 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-
-      - name: Build Docker Image
+      - name: Build and Push Backend Docker Image
         env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}  # Using commit SHA as image tag
         run: |
-          IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
-          docker build -t $IMAGE_URI .
+          BACKEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.BACKEND_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+          docker build -t $BACKEND_IMAGE_URI -f ./Dockerfile ./
+          docker push $BACKEND_IMAGE_URI
 
-      - name: Push Docker Image to ECR
+      - name: Build and Push Frontend Docker Image
         env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}  # Using commit SHA as image tag
         run: |
-          IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
-          docker push $IMAGE_URI
+          FRONTEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.FRONTEND_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+          docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
+          docker push $FRONTEND_IMAGE_URI
