@@ -218,7 +218,7 @@ article.chatroom>.chatbox-section {
 
 .user-chat-options>.opensidebar {
     aspect-ratio: 1;
-    height: 100%;
+    height: 75%;
     font-size: var(--umedium);
     background-color: light-dark(var(--ucolor-white-secondary), var(--ucolor-black-secondary));
     border-radius: var(--uxsmall);

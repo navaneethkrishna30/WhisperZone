@@ -19,14 +19,15 @@ CORS(app, supports_credentials=True)
 
 
 # MongoDB configuration
-mongo_client = MongoClient('mongodb://mongo:27017/')
+mongo_client = MongoClient('mongodb://mongo:27017/chat_db')
 db = mongo_client['chat_db']
 
 # Redis configuration
-redis = Redis(host='redis', port=6379, decode_responses=True)
+redis_host = 'redis'
+redis = Redis(host=redis_host, port=6379, decode_responses=True)
 
 #SocketIO config
-socketio = SocketIO(app, cors_allowed_origins="*", message_queue='redis://redis:6379')
+socketio = SocketIO(app, cors_allowed_origins="*", message_queue=f'redis://redis:6379')
 
 #room-code generator
 def generate_unique_code(length):
@@ -42,12 +43,16 @@ def create_room():
     if not name:
         return jsonify({"error": "Name is required"}), 400
 
-    room_code = generate_unique_code(6)
-    redis.hset(f"room:{room_code}", "members", json.dumps({}))
-    redis.hset(f"room:{room_code}", "messages", json.dumps([]))
-    session["room"] = room_code
-    session["name"] = name
-    return jsonify({"room": room_code, "name": name})
+    try:
+        room_code = generate_unique_code(6)
+        redis.hset(f"room:{room_code}", "members", json.dumps({}))
+        redis.hset(f"room:{room_code}", "messages", json.dumps([]))
+        session["room"] = room_code
+        session["name"] = name
+        return jsonify({"room": room_code, "name": name})
+    except Exception as e:
+        # Improved error handling: return detailed error message
+        return jsonify({"error": f"Failed to create room: {str(e)}"}), 500
 
 @app.route("/api/join-room", methods=["POST"])
 def join_room_api():
@@ -59,9 +64,13 @@ def join_room_api():
     if not redis.exists(f"room:{code}"):
         return jsonify({"error": "Room does not exist"}), 400
 
-    session["room"] = code
-    session["name"] = name
-    return jsonify({"room": code, "name": name})
+    try:
+        session["room"] = code
+        session["name"] = name
+        return jsonify({"room": code, "name": name})
+    except Exception as e:
+        # Improved error handling: return detailed error message
+        return jsonify({"error": f"Failed to join room: {str(e)}"}), 500
 
 @app.route("/api/save-chat", methods=["POST"])
 def save_chat():
@@ -70,17 +79,17 @@ def save_chat():
     if not room:
         return jsonify({"error": "Room ID is required"}), 400
 
-    # Retrieve previous messages from Redis
-    previous_messages = json.loads(redis.hget(f"room:{room}", "messages") or "[]")
-
-    # Save the chat to MongoDB
-    chat_data = {
-        "room_id": room,
-        "messages": previous_messages,
-    }
-    db.chats.insert_one(chat_data)
-
-    return jsonify({"message": "Chat saved successfully"}), 200
+    try:
+        previous_messages = json.loads(redis.hget(f"room:{room}", "messages") or "[]")
+        chat_data = {
+            "room_id": room,
+            "messages": previous_messages,
+        }
+        db.chats.insert_one(chat_data)
+        return jsonify({"message": "Chat saved successfully"}), 200
+    except Exception as e:
+        # Improved error handling: return detailed error message
+        return jsonify({"error": f"Failed to save chat: {str(e)}"}), 500
 
 
 # SockerIO routes

@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  live-chat-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - FLASK_APP=app.py
+    networks:
+      - live-chat-network
+    ports:
+      - 5000:5000
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"
+    networks:
+      - live-chat-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - live-chat-network
+    volumes:
+      - redis-data:/data
+
+  mongo:
+    image: dannyben/alpine-mongo
+    container_name: mongo
+    networks:
+      - live-chat-network
+    volumes:
+      - mongo-data:/data/db

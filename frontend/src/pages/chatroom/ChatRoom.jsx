@@ -4,6 +4,8 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoSend } from "react-icons/io5";
 import { FaUserGroup } from "react-icons/fa6";
 
+import { toast } from "react-toastify"; // Add this import for toast notifications
+
 import Header from "../../components/header/Header";
 import Button from "../../components/button/Button";
 
@@ -89,12 +91,12 @@ const ChatRoom = () => {
         room: roomId,
         messages: messages,
       });
-      alert(res.data.message);
+      toast.success(res.data.message); // Use toast for success notification
     } catch (err) {
       console.error(err.response.data);
-      alert(
+      toast.error(
         "Error saving chat: " + (err.response.data.error || "Unknown error")
-      );
+      ); // Use toast for error notification
     }
   };
   return (
@@ -187,49 +189,3 @@ const ChatRoom = () => {
 };
 
 export default ChatRoom;
-
-{
-  /* <div>
-  <div className="navbar">
-    <a href="/" className="brand">
-      LiveChat
-    </a>
-    <div className="room-code">Room Code: {roomId}</div>
-  </div>
-
-  <div id="chat-container">
-    <div id="sidebar">
-      <h3>Members</h3>
-      <div id="members">
-        <ul>
-          {members.map((member, index) => (
-            <li key={index}>{member}</li>
-          ))}
-        </ul>
-      </div>
-      <button onClick={saveChat}>Save Chat</button>
-      <button onClick={handleLeaveRoom}>Leave Room</button>
-    </div>
-
-    <div id="messages-container">
-      <div id="messages">
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.name}</strong>: {msg.message}
-          </div>
-        ))}
-      </div>
-      <div id="input-container">
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button onClick={sendMessage}>Send</button>
-      </div>
-    </div>
-  </div>
-</div> */
-}

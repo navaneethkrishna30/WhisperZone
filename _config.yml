@@ -1,0 +1,9 @@
+title: WhisperZone
+description: A real-time chat application using Flask, Redis, MongoDB, Flask-SocketIO, and a React frontend powered by Vite. 
+show_downloads: false
+google_analytics: null
+theme: jekyll-theme-midnight
+markdown: GFM
+include:
+  - README.md
+  - LICENSE
