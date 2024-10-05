@@ -1,0 +1,50 @@
+header {
+    z-index: 100;
+    width: 100%;
+    height: var(--uxxlarge);
+    padding-inline: var(--ularge);
+    background-color: light-dark(var(--ucolor-white-secondary), var(--ucolor-black-secondary));
+    display: flex;
+    align-items: center;
+    gap: var(--ularge);
+    box-shadow: 0 2px 10px #222;
+}
+
+header>h2 {
+    font-size: var(--ularge);
+    color: var(--color-green-primary);
+    font-weight: 900;
+}
+
+
+
+header>.headvoid {
+    flex-grow: 1;
+}
+
+header>.more-options {
+    aspect-ratio: 1;
+    height: 60%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url("/iconpack/more-options-light.svg");
+}
+
+/* laptop */
+@media (width < 1441px) {}
+
+/* tablet */
+@media (width < 769px) {
+    header {
+        height: var(--uxlarge);
+    }
+}
+
+/* mobile */
+@media (width < 426px) {}
+
+@media(prefers-color-scheme: dark) {
+    header>.more-options {
+        background-image: url("/iconpack/more-options-dark.svg");
+    }
+}
