@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - fixes/cleanup-1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Build and Push Backend Docker Image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          BACKEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.BACKEND_ECR }}:${{ env.IMAGE_TAG }}"
+          docker build -t $BACKEND_IMAGE_URI -f ./Dockerfile ./
+          docker push $BACKEND_IMAGE_URI
+
+      - name: Build and Push Frontend Docker Image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          FRONTEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.FRONTEND_ECR }}:${{ env.IMAGE_TAG }}"
+          docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
+          docker push $FRONTEND_IMAGE_URI
+
+      - name: SSH into EC2 and Update Containers with Docker Compose
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
+          chmod 600 ec2_key.pem
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem ec2-user@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+
+            export IMAGE_TAG=${IMAGE_TAG}
+
+            docker-compose pull
+            docker-compose up -d
+          EOF
