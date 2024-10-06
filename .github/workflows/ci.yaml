@@ -25,7 +25,7 @@ jobs:
 
       - name: Build and Push Backend Docker Image
         env:
-          IMAGE_TAG: ${{ github.sha }
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           BACKEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.BACKEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $BACKEND_IMAGE_URI -f ./Dockerfile ./
