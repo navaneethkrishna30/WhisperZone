@@ -1,3 +1,5 @@
+# this yaml file is intended to be used after development, to test the compose environment running all 4 containers locally mimicing the production enviironment
+
 version: '3.8'
 
 networks:
@@ -28,7 +30,7 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     ports:
-      - "80:80"
+      - "5173:5173"
     networks:
       - live-chat-network
 

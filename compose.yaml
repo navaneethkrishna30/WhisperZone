@@ -1,29 +1,36 @@
+# production yaml
+
 version: '3.8'
 
-# Network isolation
 networks:
   live-chat-network:
     driver: bridge
 
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
 services:
   backend:
-    build:
-      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
     container_name: backend
     environment:
       - PYTHONPATH=/code
       - FLASK_APP=app.py
-      - FLASK_RUN_HOST=0.0.0.0
-      - REDIS_HOST=redis
-      - REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-      - MONGO_URI=mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@mongo:27017/chat_db
-    ports:
-      - "5000:5000"  # Expose the backend server port
     networks:
       - live-chat-network
-    depends_on:
-      - redis
-      - mongo
+    ports:
+      - 5000:5000
+
+  frontend:
+    image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND_ECR}:${IMAGE_TAG}"
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - live-chat-network
 
   redis:
     image: redis:alpine
@@ -33,6 +40,8 @@ services:
       - REDIS_PASSWORD=test_redispassword
     networks:
       - live-chat-network
+    volumes:
+      - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "test_redispassword", "ping"]
       interval: 5s
@@ -42,14 +51,7 @@ services:
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
-    environment:
-      - MONGO_INITDB_DATABASE=chat_db
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin1234
     networks:
       - live-chat-network
-    healthcheck:
-      test: ["CMD", "mongo", "--username", "admin", "--password", "admin1234", "--eval", "db.admin.findOne()"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+    volumes:
+      - mongo-data:/data/db
