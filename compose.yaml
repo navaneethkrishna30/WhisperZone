@@ -15,10 +15,19 @@ volumes:
 services:
   backend:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
     container_name: backend
     environment:
       - PYTHONPATH=/code
       - FLASK_APP=app.py
+    networks:
+      - live-chat-network
+    ports:
+      - 5000:5000
+
+  frontend:
+    image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND_ECR}:${IMAGE_TAG}"
+    container_name: frontend
     networks:
       - live-chat-network
     ports:
@@ -35,18 +44,10 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
-    command: redis-server --requirepass test_redispassword
-    environment:
-      - REDIS_PASSWORD=test_redispassword
     networks:
       - live-chat-network
     volumes:
       - redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "test_redispassword", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
 
   mongo:
     image: dannyben/alpine-mongo
