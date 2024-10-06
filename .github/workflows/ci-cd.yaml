@@ -49,9 +49,9 @@ jobs:
           chmod 600 ec2_key.pem
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem ec2-user@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
 
-            export IMAGE_TAG=${IMAGE_TAG}
-            export FRONTEND_ECR=${FRONTEND_ECR}
-            export BACKEND_ECR=${BACKEND_ECR}
+            export IMAGE_TAG=${env.IMAGE_TAG}
+            export FRONTEND_ECR=${env.FRONTEND_ECR}
+            export BACKEND_ECR=${env.BACKEND_ECR}
 
             docker-compose pull
             docker-compose up -d
