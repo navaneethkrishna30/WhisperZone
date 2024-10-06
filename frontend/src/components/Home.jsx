@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { toast } from 'react-toastify'; // Add this import for toast notifications
+import { toast } from 'react-toastify';
 
 const Home = () => {
   const [name, setName] = useState('');
@@ -10,27 +10,27 @@ const Home = () => {
 
   const createRoom = async () => {
     if (!name) {
-      toast.error('Please enter a name'); // Use toast for error notification
+      toast.error('Please enter a name');
       return;
     }
     try {
       const res = await axios.post('http://localhost:5000/api/create-room', { name }, { withCredentials: true });
       navigate(`/room/${res.data.room}`);
     } catch (err) {
-      toast.error('Error creating room: ' + (err.response.data.error || 'Unknown error')); // Use toast for error notification
+      toast.error('Error creating room: ' + (err.response.data.error || 'Unknown error'));
     }
   };
 
   const joinRoom = async () => {
     if (!name || !code) {
-      toast.error('Please enter a name and room code'); // Use toast for error notification
+      toast.error('Please enter a name and room code');
       return;
     }
     try {
       const res = await axios.post('http://localhost:5000/api/join-room', { name, code }, { withCredentials: true });
       navigate(`/room/${res.data.room}`);
     } catch (err) {
-      toast.error('Room does not exist: ' + (err.response.data.error || 'Unknown error')); // Use toast for error notification
+      toast.error('Room does not exist: ' + (err.response.data.error || 'Unknown error'));
     }
   };
 
