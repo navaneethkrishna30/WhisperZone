@@ -1,43 +1,48 @@
+# production yaml
+
 version: '3.8'
 
-# Network isolation
 networks:
   live-chat-network:
     driver: bridge
 
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
 services:
   backend:
-    build:
-      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
     container_name: backend
     environment:
       - FLASK_APP=app.py
-      - FLASK_RUN_HOST=0.0.0.0
-      - REDIS_HOST=redis
-      - REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-      - MONGO_URI=mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@mongo:27017/chat_db
-    ports:
-      - "5000:5000"  # Expose the backend server port
     networks:
       - live-chat-network
-    depends_on:
-      - redis
-      - mongo
+    ports:
+      - 5000:5000
+
+  frontend:
+    image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND_ECR}:${IMAGE_TAG}"
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - live-chat-network
 
   redis:
     image: redis:alpine
     container_name: redis
-    environment:
-      - REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
     networks:
       - live-chat-network
+    volumes:
+      - redis-data:/data
 
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
-    environment:
-      - MONGO_INITDB_DATABASE=chat_db
-      - MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
-      - MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
     networks:
       - live-chat-network
+    volumes:
+      - mongo-data:/data/db
