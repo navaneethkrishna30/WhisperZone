@@ -45,6 +45,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           FRONTEND_ECR: ${{ secrets.FRONTEND_ECR }}
           BACKEND_ECR: ${{ secrets.BACKEND_ECR }}
+<<<<<<< HEAD
         with:
           host: ${{ secrets.EC2_INSTANCE_IP }}
           username: ${{ secrets.USERNAME }}
@@ -55,6 +56,16 @@ jobs:
             export IMAGE_TAG=${IMAGE_TAG}
             export FRONTEND_ECR=${FRONTEND_ECR}
             export BACKEND_ECR=${BACKEND_ECR}
+=======
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
+          chmod 600 ec2_key.pem
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem ec2-user@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+
+            export IMAGE_TAG=${env.IMAGE_TAG}
+            export FRONTEND_ECR=${env.FRONTEND_ECR}
+            export BACKEND_ECR=${env.BACKEND_ECR}
+>>>>>>> 711de9d (improper env reference in ssh stage)
 
             docker-compose pull
             docker-compose up -d
