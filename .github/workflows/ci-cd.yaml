@@ -1,9 +1,9 @@
-name: CI
+name: CI/CD
 
 on:
   push:
     branches:
-      - fixes/cleanup-1
+      - main
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          BACKEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.BACKEND_ECR }}:${{ env.IMAGE_TAG }}"
+          BACKEND_IMAGE_URI="${{ secrets.BACKEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $BACKEND_IMAGE_URI -f ./Dockerfile ./
           docker push $BACKEND_IMAGE_URI
 
@@ -35,16 +35,27 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          FRONTEND_IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.FRONTEND_ECR }}:${{ env.IMAGE_TAG }}"
+          FRONTEND_IMAGE_URI="${{ secrets.FRONTEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
           docker push $FRONTEND_IMAGE_URI
 
-      - name: SSH into EC2 and Update Containers with Docker Compose
+      - name: SSH remote commands
+        uses: appleboy/ssh-action@v1.1.0
         env:
           IMAGE_TAG: ${{ github.sha }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -i "${{ secrets.EC2_PRIVATE_KEY }}" ec2-user@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+          FRONTEND_ECR: ${{ secrets.FRONTEND_ECR }}
+          BACKEND_ECR: ${{ secrets.BACKEND_ECR }}
+        with:
+          host: ${{ secrets.EC2_INSTANCE_IP }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            whoami
             export IMAGE_TAG=${IMAGE_TAG}
+            export FRONTEND_ECR=${FRONTEND_ECR}
+            export BACKEND_ECR=${BACKEND_ECR}
 
             docker-compose pull
             docker-compose up -d
+  

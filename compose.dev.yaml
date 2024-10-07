@@ -17,7 +17,7 @@ services:
     image: redis:alpine
     container_name: redis
     ports:
-      - "6379:6379"
+      - 6379:6379
     networks:
       - live-chat-network
     volumes:
@@ -27,7 +27,7 @@ services:
     image: dannyben/alpine-mongo
     container_name: mongo
     ports:
-      - "27017:27017"
+      - 27017:27017
     networks:
       - live-chat-network
     volumes:
