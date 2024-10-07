@@ -15,19 +15,9 @@ volumes:
 services:
   backend:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
     container_name: backend
     environment:
-      - PYTHONPATH=/code
       - FLASK_APP=app.py
-    networks:
-      - live-chat-network
-    ports:
-      - 5000:5000
-
-  frontend:
-    image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND_ECR}:${IMAGE_TAG}"
-    container_name: frontend
     networks:
       - live-chat-network
     ports:
