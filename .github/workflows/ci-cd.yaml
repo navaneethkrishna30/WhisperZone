@@ -51,6 +51,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            whoami
             export IMAGE_TAG=${IMAGE_TAG}
             export FRONTEND_ECR=${FRONTEND_ECR}
             export BACKEND_ECR=${BACKEND_ECR}
