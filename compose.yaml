@@ -28,7 +28,7 @@ services:
     image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND_ECR}:${IMAGE_TAG}"
     container_name: frontend
     ports:
-      - "5173:5173"
+      - 5173:5173
     networks:
       - live-chat-network
 
