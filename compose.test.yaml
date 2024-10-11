@@ -1,5 +1,6 @@
 version: '3.8'
 
+# Network isolation
 networks:
   live-chat-network:
     driver: bridge
@@ -10,17 +11,27 @@ services:
       dockerfile: Dockerfile
     container_name: backend_test
     environment:
+      - PYTHONPATH=/code
       - FLASK_APP=app.py
       - REDIS_HOST=redis
       - REDIS_PASSWORD=test_redispassword
-      - MONGO_URI=mongodb://admin:admin1234@mongo:27017/
+      - MONGO_URI=mongodb://admin:admin1234@mongo:27017/chat_db
     depends_on:
       - redis
       - mongo
     networks:
       - live-chat-network
-    command: ["pytest", "test_app.py"]  # Run tests when the container starts
-
+    command: >
+      /bin/sh -c "
+      while ! nc -z redis 6379; do
+        echo 'Waiting for Redis...';
+        sleep 1;
+      done;
+      while ! nc -z mongo 27017; do
+        echo 'Waiting for MongoDB...';
+        sleep 1;
+      done;
+      pytest tests/ --cov=app --cov-report=term-missing"
 
   redis:
     image: redis:alpine
@@ -30,7 +41,7 @@ services:
       - REDIS_PASSWORD=test_redispassword
     networks:
       - live-chat-network
-  
+
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
