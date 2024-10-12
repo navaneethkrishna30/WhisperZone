@@ -11,6 +11,7 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     environment:
+      - PYTHONPATH=/code
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
       - REDIS_HOST=redis
@@ -27,17 +28,28 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
+    command: redis-server --requirepass test_redispassword
     environment:
-      - REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+      - REDIS_PASSWORD=test_redispassword
     networks:
       - live-chat-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "test_redispassword", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
     environment:
       - MONGO_INITDB_DATABASE=chat_db
-      - MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
-      - MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin1234
     networks:
       - live-chat-network
+    healthcheck:
+      test: ["CMD", "mongo", "--username", "admin", "--password", "admin1234", "--eval", "db.admin.findOne()"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
