@@ -249,6 +249,13 @@ Thanks to the following people who have contributed to this project:
                     <sub><b>Navaneeth Krishna</b></sub>
                 </a>
             </td>
+            <td align="center">
+                <a href="https://github.com/Prithwi32">
+                    <img src="https://avatars.githubusercontent.com/u/115262737?v=4" width="100;" alt="Prithwi32"/>
+                    <br />
+                    <sub><b>Prithwi Hegde </b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
