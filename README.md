@@ -255,17 +255,17 @@ Thanks to the following people who have contributed to this project:
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/rishi-harti768">
-                    <img src="https://avatars.githubusercontent.com/u/177644202?v=4" width="100;" alt="rishi-harti768"/>
-                    <br />
-                    <sub><b>rishi-harti768</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/Prithwi32">
                     <img src="https://avatars.githubusercontent.com/u/115262737?v=4" width="100;" alt="Prithwi32"/>
                     <br />
                     <sub><b>Prithwi Hegde</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/rishi-harti768">
+                    <img src="https://avatars.githubusercontent.com/u/177644202?v=4" width="100;" alt="rishi-harti768"/>
+                    <br />
+                    <sub><b>rishi-harti768</b></sub>
                 </a>
             </td>
 		</tr>
