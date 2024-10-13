@@ -89,7 +89,7 @@ This project uses Docker Compose to manage services (backend, Redis, MongoDB).
    ```
 
    This will start the backend, Redis, and MongoDB in their respective containers. The backend will be exposed on port `5000`.
-   
+
 2. **Access the application:**
 
    - The backend API will be available at `http://localhost:5000`.
@@ -143,11 +143,13 @@ The application includes integration tests for Redis, MongoDB, and API routes. T
 The application is divided into the following services:
 
 1. **Backend:**
+
    - Flask app with WebSocket support via Flask-SocketIO.
    - Manages chat rooms and messages.
    - REST API for creating/joining rooms and saving chat history.
 
 2. **Redis:**
+
    - Used for real-time, in-memory message storage and room management.
 
 3. **MongoDB:**
@@ -163,26 +165,29 @@ We welcome contributions from the community. To get started:
    You can do this by clicking the [Fork](https://github.com/navaneethkrishna30/WhisperZone/fork) button on the top right of the repository page.
 
 2. **Create a feature branch:**
+
    ```bash
    git checkout -b feature/my-feature
    ```
 
 3. **Make your changes.**
 
-
 4. **Run tests locally to ensure everything works as expected.**
 
 5. **Commit your changes with a descriptive message:**
+
    ```bash
    git commit -m "Add feature: description of your feature"
    ```
 
 6. **Push the changes to your fork:**
+
    ```bash
    git push origin feature/my-feature
    ```
 
 7. **Submit a pull request:**
+
    - Go to the original repository on GitHub.
    - Click on the "Pull Requests" tab.
    - Click the "New Pull Request" button.
@@ -235,27 +240,34 @@ Thanks to the following people who have contributed to this project:
 <table>
 	<tbody>
 		<tr>
-            <td align="center">
-                <a href="https://github.com/yashksaini-coder">
-                    <img src="https://avatars.githubusercontent.com/u/115717039?v=4" width="100;" alt="yashksaini-coder"/>
-                    <br />
-                    <sub><b>Yash Kumar Saini</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/navaneethkrishna30">
-                    <img src="https://avatars.githubusercontent.com/u/107757582?v=4" width="100;" alt="navaneethkrishna30"/>
-                    <br />
-                    <sub><b>Navaneeth Krishna</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/Prithwi32">
-                    <img src="https://avatars.githubusercontent.com/u/115262737?v=4" width="100;" alt="Prithwi32"/>
-                    <br />
-                    <sub><b>Prithwi Hegde </b></sub>
-                </a>
-            </td>
+         <td align="center">
+            <a href="https://github.com/navaneethkrishna30">
+            <img src="https://avatars.githubusercontent.com/u/107757582?v=4" width="100;" alt="navaneethkrishna30"/>
+            <br />
+            <sub><b>Navaneeth Krishna</b></sub>
+            </a>
+         </td>
+         <td align="center">
+            <a href="https://github.com/yashksaini-coder">
+            <img src="https://avatars.githubusercontent.com/u/115717039?v=4" width="100;" alt="yashksaini-coder"/>
+            <br />
+            <sub><b>Yash Kumar Saini</b></sub>
+            </a>
+         </td>
+         <td align="center">
+            <a href="https://github.com/Prithwi32">
+            <img src="https://avatars.githubusercontent.com/u/115262737?v=4" width="100;" alt="Prithwi32"/>
+            <br />
+            <sub><b>Prithwi Hegde</b></sub>
+            </a>
+         </td>
+         <td align="center">
+            <a href="https://github.com/rishi-harti768">
+            <img src="https://avatars.githubusercontent.com/u/177644202?v=4&size=64" width="100;" alt="rishi-harti"/>
+            <br />
+            <sub><b>Rishi Harti</b></sub>
+            </a>
+         </td>
 		</tr>
 	<tbody>
 </table>
