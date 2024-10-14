@@ -16,6 +16,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+
+      - name: Lint Python code
+        id: pylint
+        run: |
+          pylint_output=$(pylint . || true)
+          echo "$pylint_output"
+          echo "$pylint_output" > pylint-report.txt
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
         env:
@@ -24,37 +41,38 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Build and Push Backend Docker Image
+        id: backend_image
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           BACKEND_IMAGE_URI="${{ secrets.BACKEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $BACKEND_IMAGE_URI -f ./Dockerfile ./
           docker push $BACKEND_IMAGE_URI
+          echo "::set-output name=backend_image_uri::$BACKEND_IMAGE_URI"
 
       - name: Build and Push Frontend Docker Image
+        id: frontend_image
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           FRONTEND_IMAGE_URI="${{ secrets.FRONTEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
           docker push $FRONTEND_IMAGE_URI
+          echo "::set-output name=frontend_image_uri::$FRONTEND_IMAGE_URI"
 
-      - name: SSH remote commands
-        uses: appleboy/ssh-action@v1.1.0
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-          FRONTEND_ECR: ${{ secrets.FRONTEND_ECR }}
-          BACKEND_ECR: ${{ secrets.BACKEND_ECR }}
-        with:
-          host: ${{ secrets.EC2_INSTANCE_IP }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            whoami
-            export IMAGE_TAG=${IMAGE_TAG}
-            export FRONTEND_ECR=${FRONTEND_ECR}
-            export BACKEND_ECR=${BACKEND_ECR}
+      - name: Aggregate Outputs
+        run: |
+          # Get Docker image URIs
+          BACKEND_IMAGE_URI="${{ steps.backend_image.outputs.backend_image_uri }}"
+          FRONTEND_IMAGE_URI="${{ steps.frontend_image.outputs.frontend_image_uri }}"
+          
+          PYLINT_OUTPUT=$(cat pylint-report.txt)
 
-            docker-compose pull
-            docker-compose up -d
+          echo "### Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend Image: $BACKEND_IMAGE_URI" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend Image: $FRONTEND_IMAGE_URI" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Pylint Summary" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$PYLINT_OUTPUT" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
