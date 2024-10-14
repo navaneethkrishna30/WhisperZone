@@ -26,12 +26,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
 
-      - name: Lint Python code
-        id: pylint
-        run: |
-          pylint_output=$(pylint . || true)
-          echo "$pylint_output"
-          echo "$pylint_output" > pylint-report.txt
+      - name: Lint Code
+        run: pylint app.py || true
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -41,38 +37,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Build and Push Backend Docker Image
-        id: backend_image
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           BACKEND_IMAGE_URI="${{ secrets.BACKEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $BACKEND_IMAGE_URI -f ./Dockerfile ./
           docker push $BACKEND_IMAGE_URI
-          echo "::set-output name=backend_image_uri::$BACKEND_IMAGE_URI"
 
       - name: Build and Push Frontend Docker Image
-        id: frontend_image
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           FRONTEND_IMAGE_URI="${{ secrets.FRONTEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
           docker push $FRONTEND_IMAGE_URI
-          echo "::set-output name=frontend_image_uri::$FRONTEND_IMAGE_URI"
-
-      - name: Aggregate Outputs
-        run: |
-          # Get Docker image URIs
-          BACKEND_IMAGE_URI="${{ steps.backend_image.outputs.backend_image_uri }}"
-          FRONTEND_IMAGE_URI="${{ steps.frontend_image.outputs.frontend_image_uri }}"
-          
-          PYLINT_OUTPUT=$(cat pylint-report.txt)
-
-          echo "### Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- Backend Image: $BACKEND_IMAGE_URI" >> $GITHUB_STEP_SUMMARY
-          echo "- Frontend Image: $FRONTEND_IMAGE_URI" >> $GITHUB_STEP_SUMMARY
-
-          echo "### Pylint Summary" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "$PYLINT_OUTPUT" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
