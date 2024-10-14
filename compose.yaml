@@ -1,4 +1,4 @@
-# production yaml
+# reference production yaml
 
 version: '3.8'
 
@@ -17,6 +17,7 @@ services:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
     container_name: backend
     environment:
+      - PYTHONPATH=/code
       - FLASK_APP=app.py
     networks:
       - live-chat-network
