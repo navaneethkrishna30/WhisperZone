@@ -40,6 +40,7 @@ jobs:
           docker push $FRONTEND_IMAGE_URI
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Set up environment variables
@@ -47,6 +48,7 @@ jobs:
           echo "BACKEND_ECR=${{ secrets.BACKEND_ECR }}" >> $GITHUB_ENV
           echo "FRONTEND_ECR=${{ secrets.FRONTEND_ECR }}" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+          echo "ECR_DOCKER_LOGIN=${{ secrets.ECR_DOCKER_LOGIN }}" >> $GITHUB_ENV
 
       - name: Deploy via SSH
         run: |
@@ -56,5 +58,6 @@ jobs:
             "export BACKEND_ECR=${{ secrets.BACKEND_ECR }} && \
              export FRONTEND_ECR=${{ secrets.FRONTEND_ECR }} && \
              export IMAGE_TAG=${{ github.sha }} && \
+             ${{ secrets.ECR_DOCKER_LOGIN }} && \
              docker-compose pull && \
              docker-compose up -d"
