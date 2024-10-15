@@ -63,7 +63,7 @@ jobs:
 
       - name: Deploy via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_INSTANCE_IP }}"
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem ec2-user@${{ secrets.EC2_INSTANCE_IP }}"
 
           export BACKEND_ECR=${{ secrets.BACKEND_ECR }};
           export FRONTEND_ECR=${{ secrets.FRONTEND_ECR }};
