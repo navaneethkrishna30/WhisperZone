@@ -92,14 +92,6 @@ def save_chat():
     except Exception as e:
         return jsonify({"error": f"Failed to save chat: {str(e)}"}), 500
 
-@app.route('/api/get-members')
-def get_members():
-    # your existing logic
-    response_data = {'members': members_list}
-    print(response_data)  # Debug statement
-    return jsonify(response_data)
-
-
 # SocketIO event handlers
 @socketio.on("message")
 def handle_message(data):

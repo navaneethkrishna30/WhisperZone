@@ -3,12 +3,36 @@ name: CI/CD
 on:
   push:
     branches:
-      - fixes/cleanup-1
+      - main
 
 jobs:
-  build:
+  checkout:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+    
+  lint:
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      - name: Lint Code
+        run: |
+          pylint app.py || true
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -39,22 +63,25 @@ jobs:
           docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
           docker push $FRONTEND_IMAGE_URI
 
-      - name: SSH remote commands
-        uses: appleboy/ssh-action@v1.1.0
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-          FRONTEND_ECR: ${{ secrets.FRONTEND_ECR }}
-          BACKEND_ECR: ${{ secrets.BACKEND_ECR }}
-        with:
-          host: ${{ secrets.EC2_INSTANCE_IP }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            whoami
-            export IMAGE_TAG=${IMAGE_TAG}
-            export FRONTEND_ECR=${FRONTEND_ECR}
-            export BACKEND_ECR=${BACKEND_ECR}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment variables
+        run: |
+          echo "BACKEND_ECR=${{ secrets.BACKEND_ECR }}" >> $GITHUB_ENV
+          echo "FRONTEND_ECR=${{ secrets.FRONTEND_ECR }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+          echo "ECR_DOCKER_LOGIN=${{ secrets.ECR_DOCKER_LOGIN }}" >> $GITHUB_ENV
 
-            docker-compose pull
-            docker-compose up -d
+      - name: Deploy via SSH
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
+          chmod 600 ec2_key.pem
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem ec2-user@${{ secrets.EC2_INSTANCE_IP }} \
+            "export BACKEND_ECR=${{ secrets.BACKEND_ECR }} && \
+             export FRONTEND_ECR=${{ secrets.FRONTEND_ECR }} && \
+             export IMAGE_TAG=${{ github.sha }} && \
+             ${{ secrets.ECR_DOCKER_LOGIN }} && \
+             docker-compose pull && \
+             docker-compose up -d"
