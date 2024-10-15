@@ -51,3 +51,27 @@ jobs:
           FRONTEND_IMAGE_URI="${{ secrets.FRONTEND_ECR }}:${{ env.IMAGE_TAG }}"
           docker build -t $FRONTEND_IMAGE_URI -f ./frontend/Dockerfile ./frontend
           docker push $FRONTEND_IMAGE_URI
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment variables
+        run: |
+          echo "BACKEND_ECR=${{ secrets.BACKEND_ECR }}" >> $GITHUB_ENV
+          echo "FRONTEND_ECR=${{ secrets.FRONTEND_ECR }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_INSTANCE_IP }}"
+
+          export BACKEND_ECR=${{ secrets.BACKEND_ECR }};
+          export FRONTEND_ECR=${{ secrets.FRONTEND_ECR }};
+          export IMAGE_TAG=${{ github.sha }};
+          
+          docker-compose pull;
+          docker-compose up -d"
+        env:
+          BACKEND_ECR: ${{ secrets.BACKEND_ECR }}
+          FRONTEND_ECR: ${{ secrets.FRONTEND_ECR }}
+          IMAGE_TAG: ${{ github.sha }}
