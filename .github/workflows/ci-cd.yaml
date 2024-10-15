@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - fixes/cleanup-1
+      - main
 
 jobs:
   checkout:
