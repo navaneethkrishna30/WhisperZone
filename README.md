@@ -43,10 +43,7 @@ I'm open to new feature ideas! If you have any cool features you'd like to imple
 - **Real-time communication** using WebSockets via Flask-SocketIO.
 - **Room-based chat system** with dynamically generated room codes.
 - **In-memory chat storage** using Redis and **persistent chat history** saved in MongoDB.
-- **REST API endpoints** to create and join chat rooms, and save chat history.
-- **React frontend** for user-friendly chat experience.
 - **Dockerized setup** with Redis, MongoDB, Flask backend, and React frontend running in containers.
-- **Integration tests** for Redis, MongoDB connectivity, and API functionality.
 
 ## Prerequisites
 
@@ -66,55 +63,36 @@ git clone https://github.com/navaneethkrishna30/WhisperZone.git
 cd WhisperZone
 ```
 
-### Setup Docker Secrets
+## Setup for Local Development 
 
-Create a `.env` file in the project root and define the following secrets:
-
-```
-REDIS_PASSWORD=your_redis_password
-MONGO_INITDB_ROOT_USERNAME=your_mongo_username
-MONGO_INITDB_ROOT_PASSWORD=your_mongo_password
-```
-
-## Running the Application with Docker
-
-### Backend Services
-
-This project uses Docker Compose to manage services (backend, Redis, MongoDB).
+This project uses Docker Compose to manage Redis, MongoDB.
 
 1. **Build and start the services:**
 
    ```bash
-   docker-compose up --build
+   docker compose -f compose.dev.yaml up
    ```
 
-   This will start the backend, Redis, and MongoDB in their respective containers. The backend will be exposed on port `5000`.
+   For development purposes, Redis has been exposed at Port `6379` and Mongo at Port `27017`
+   
+2. **Backend:**
+   
+   ```bash
+   flask run
+   ```
+   The backend will be running and would be available at Port `5000`
 
-2. **Access the application:**
+3. **Frontend:**
 
-   - The backend API will be available at `http://localhost:5000`.
+   The frontend is built using Vite and React, located in the `frontend/` directory.
 
-### Frontend Development
+   To run the frontend locally (without Docker), follow these steps:
 
-The frontend is built using Vite and React, located in the `frontend/` directory.
-
-To run the frontend locally (without Docker), follow these steps:
-
-1. Navigate to the `frontend/` directory:
+   Navigate to the `frontend/` directory, install the packages and run start the dev server:
 
    ```bash
    cd frontend
-   ```
-
-2. Install dependencies:
-
-   ```bash
    npm install
-   ```
-
-3. Start the development server:
-
-   ```bash
    npm run dev
    ```
 
@@ -122,39 +100,15 @@ To run the frontend locally (without Docker), follow these steps:
 
 ---
 
-## Running Tests
+## Running the App using Docker Compose 
 
-The application includes integration tests for Redis, MongoDB, and API routes. To run the tests:
-
-1. **Ensure Docker secrets are set for testing** (e.g., `REDIS_PASSWORD`, `MONGO_USER`, `MONGO_PASSWORD`).
-
-2. **Run the tests:**
+   There is a Docker Compose file which runs all the services in just like in the Production. It is advised to run this before submitting a Pull Request.
 
    ```bash
-   docker-compose -f compose-test.yaml up --build --abort-on-container-exit
+   docker compose -f compose.local.yaml up --build
    ```
 
-   This will start the backend in test mode and automatically run the tests.
-
----
-
-## Docker Services
-
-The application is divided into the following services:
-
-1. **Backend:**
-
-   - Flask app with WebSocket support via Flask-SocketIO.
-   - Manages chat rooms and messages.
-   - REST API for creating/joining rooms and saving chat history.
-
-2. **Redis:**
-
-   - Used for real-time, in-memory message storage and room management.
-
-3. **MongoDB:**
-   - Used for saving persistent chat history.
-
+   The app is accessible through port `5173`
 ---
 
 ## Contributing
@@ -198,39 +152,6 @@ We welcome contributions from the community. To get started:
    - Once approved, your feature will be merged into the main branch.
 
 ---
-
-## Local Backend Development
-
-For local backend development without Docker, follow these steps:
-
-1. Create a virtual environment and activate it:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # For Windows: venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Set environment variables for Redis and MongoDB:
-
-   ```bash
-   export REDIS_PASSWORD=your_redis_password
-   export MONGO_INITDB_ROOT_USERNAME=your_mongo_username
-   export MONGO_INITDB_ROOT_PASSWORD=your_mongo_password
-   ```
-
-4. Start the Flask app:
-
-   ```bash
-   flask run
-   ```
-
-The backend will now run locally at `http://localhost:5000`.
 
 ## Contributors
 

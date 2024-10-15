@@ -1,4 +1,4 @@
-# reference production yaml
+# this yaml file is to be used during developement to have redis and mongo containers for development purposes
 
 version: '3.8'
 
@@ -13,17 +13,11 @@ volumes:
     driver: local
 
 services:
-  backend:
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_ECR}:${IMAGE_TAG}
-    container_name: backend
-    ports:
-      - 5173:5173
-    networks:
-      - live-chat-network
-
   redis:
     image: redis:alpine
     container_name: redis
+    ports:
+      - 6379:6379
     networks:
       - live-chat-network
     volumes:
@@ -32,6 +26,8 @@ services:
   mongo:
     image: dannyben/alpine-mongo
     container_name: mongo
+    ports:
+      - 27017:27017
     networks:
       - live-chat-network
     volumes:
