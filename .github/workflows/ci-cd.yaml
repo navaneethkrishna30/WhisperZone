@@ -20,6 +20,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install pylint
     
   lint:
     runs-on: ubuntu-latest
@@ -27,7 +28,6 @@ jobs:
     steps:
       - name: Lint Code
         run: |
-          pip install pylint
           pylint app.py || true
 
   build:
