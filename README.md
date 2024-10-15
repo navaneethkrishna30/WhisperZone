@@ -43,10 +43,7 @@ I'm open to new feature ideas! If you have any cool features you'd like to imple
 - **Real-time communication** using WebSockets via Flask-SocketIO.
 - **Room-based chat system** with dynamically generated room codes.
 - **In-memory chat storage** using Redis and **persistent chat history** saved in MongoDB.
-- **REST API endpoints** to create and join chat rooms, and save chat history.
-- **React frontend** for user-friendly chat experience.
 - **Dockerized setup** with Redis, MongoDB, Flask backend, and React frontend running in containers.
-- **Integration tests** for Redis, MongoDB connectivity, and API functionality.
 
 ## Prerequisites
 
@@ -87,9 +84,9 @@ This project uses Docker Compose to manage Redis, MongoDB.
 
 3. **Frontend:**
 
-The frontend is built using Vite and React, located in the `frontend/` directory.
+   The frontend is built using Vite and React, located in the `frontend/` directory.
 
-To run the frontend locally (without Docker), follow these steps:
+   To run the frontend locally (without Docker), follow these steps:
 
    Navigate to the `frontend/` directory, install the packages and run start the dev server:
 
@@ -105,11 +102,12 @@ To run the frontend locally (without Docker), follow these steps:
 
 ## Running the App using Docker Compose 
 
-There is a Docker Compose file which runs all the services in just like in the Production. It is advised to run this before submitting a Pull Request.
+   There is a Docker Compose file which runs all the services in just like in the Production. It is advised to run this before submitting a Pull Request.
 
    ```bash
    docker compose -f compose.local.yaml up --build
    ```
+
    The app is accessible through port `5173`
 ---
 
